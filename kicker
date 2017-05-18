@@ -1,0 +1,583 @@
+//----------------- AingCreations made this ©2013 -----------------//
+/*
+TRIGGERS:
+----------
+scanTamlan() --> per- 1 Jam --> Timeline Cleaner & Friend Confirm by Language ID/en
+groupsCleaner() --> per- 5 Menit --> Group Wall Cleaner
+floodMe() --> per- 4 Jam --> Update Status dari Status Halaman
+floodGroups() --> per 2 Jam --> Groups Auto Post
+*/
+
+var robot={
+  tokens:[
+    {id:"100004875213202",name:"Anaz D'aremania",token:"token facebook"},
+    {id:"100005106249261",name:"alaytsuki",token:"token facebook"}
+  ],
+  idPages:[
+    "214430138660502",
+    "135043246514403",
+    "223428834348633",
+    "452685551460381"
+  ],
+  idPagesKe:0,
+  idGroupKe:0,
+  tokenKe:0,
+  antiApp:[
+    "112847218766295",
+    "161334760586124",
+    "104018109673165",
+    "492258557483351",
+    "49340319393",
+    "72687635881",
+    "30713015083"
+  ],
+  antiKata:new RegExp("(socialhizmetler|faceliked|nonoy|misafm|\/pages\/|Subscribe me|misafm|Auto Like|AutoComment Work|memetspeed|Like Status|socialmedya|AUTO LIKE WORK|Free Subscribers|AutoLIKE Status|Auto Like|Sub me |Abone Kasma|working autolike|luv-like|memek|kontol|horny|anjink|anjing|fuck|pepek|bangsat|goblog|bego|nora|kampungan|peler|babi|ngentot|ngewe|puki|konto|sex|tante girang|grup sampah|nyampah|nyepam|jesus|kampret|setan)","i"),
+  antiIDonComments:[],
+  antiIDonPosts:[],
+  antiIdOnMyKomen:[
+    "100002488706430",
+    "100000069522450",
+    "100002726612027",
+    "100003983720086",
+    "100001928743246",
+    "100003304232006",
+    "100002677654807",
+    "100003200518692",
+    "100003773539181",
+    "100002468485016",
+    "100005182352888",
+    "100002429822689",
+    "100001762699789",
+    "100003044575243"
+  ],
+  promo:[
+    "zona--devil.blogspot.com/2013/02/facebook-auto-adder.html",
+    "zona--devil.blogspot.com/2013/02/facebook-like-bomber.html",
+    "zona--devil.blogspot.com/2013/02/boom-status-di-wall-grup-atau-komen-via.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-komen-respnon-like.html",
+    "zona--devil.blogspot.com/2013/02/bersiihin-fb-dari-spam-autolikekhusus.html",
+    "zona--devil.blogspot.com/2013/02/tool-untuk-menghapus-semua-status.html",
+    "zona--devil.blogspot.com/2013/02/cara-merubah-tampilan-facebook-menjadi.html",
+    "zona--devil.blogspot.com/2013/02/cara-menolak-dan-menerima-semua.html",
+    "zona--devil.blogspot.com/2013/02/cara-menghapus-smua-teman-facebook.html",
+    "zona--devil.blogspot.com/2013/02/cara-menghapus-semua-tag-poto-facebook.html",
+    "zona--devil.blogspot.com/2013/02/update-status-via-unik.html",
+    "zona--devil.blogspot.com/2013/02/cara-memindah-semua-foto-facebook-orang.html",
+    "zona--devil.blogspot.com/2013/02/cara-membuat-phising-facebook.html",
+    "zona--devil.blogspot.com/2013/02/cara-hacker-facebook-tanpa-softwere.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-komen-di-berandahome-facebook.html",
+    "zona--devil.blogspot.com/2013/02/membuat-robot-auto-deleter-spam-di-grup.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-like-di-beranda.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-konfirmasi-pertemanan.html",
+    "zona--devil.blogspot.com/2013/02/grup-post-auto-sunduler.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-update-status.html",
+    "zona--devil.blogspot.com/2013/02/robot-auto-posting-ke-smua-grup-dan.html",
+    "zona--devil.blogspot.com/2013/02/melihat-feed-dinding-grup-fan-page-dan.html",
+    ]
+};
+var verbSpams=[];
+var appSpams=[];
+var msgList=[];
+var namaSpammers=[];
+
+var ygUdhDiUnFriend=[];
+var confirmed=[];
+var tandain=0;
+
+var dptrKomenMsgs=[];
+
+function aduk(naon){
+  var a=naon.sort(function(){return 0.5-Math.random()});
+  a.reverse();
+  a=a.sort(function(){return 0.5-Math.random()});
+  return a;
+}
+function tarikMang(almt,prop){
+  var a=UrlFetchApp.fetch(almt,{
+    muteHttpExceptions:true,
+    method:"post",
+    payload:prop
+  });
+  var b=Utilities.jsonParse(a.getContentText());
+  return b;
+}
+function hapus(pid){
+  var a=tarikMang("https://graph.facebook.com/"+pid,{
+    method:"delete",
+    access_token:robot.token
+  });
+}
+function hancurkan(pdx,naon){
+  var tah=naon;
+  if(tah=="nem"){
+    hapus(pdx.id+"/tags/"+robot.uid);
+  }else{
+    hapus(pdx.id);
+  }
+  if(tah=="msg"||tah=="des"||tah=="nem"){
+  if(pdx.from&&pdx.from.name&&pdx.from.id&&pdx.from.id!=robot.uid){
+    var anPrenTong="hooh";
+    if(ygUdhDiUnFriend.length!=0){
+      for(y in ygUdhDiUnFriend){
+        if(ygUdhDiUnFriend[y].id==pdx.from.id){
+          anPrenTong="tong";
+          break;
+        }
+      }
+    }
+    var b=pdx.from.name.split(" ")[0];
+    var pesen ="Hey "+b+"!! >_<\n";
+        pesen+="DON'T YOU DARE ";
+    var balikeun="";
+    if(tah=="msg"){
+        pesen+="SPAMMING ON MY TIMELINE";
+        balikeun=pdx.message;
+    }else if(tah=="des"){
+        pesen+="SPAMMING ON MY TIMELINE";
+        balikeun=pdx.description;
+    }else if(tah=="nem"){
+        pesen+="TAGGING ME ON YOUR PHOTOS";
+        balikeun=pdx.name;
+    }
+        pesen+=" AGAIN!!\n\n";
+        pesen+="#I HATE YOU!!\n\n";
+        pesen+="----------\n";
+        pesen+=balikeun+"\n";
+        pesen+="----------\n";
+        pesen+=pdx.id;
+    var q=tarikMang("https://graph.facebook.com/"+pdx.from.id+"/feed",{method:"post",message:pesen,access_token:robot.token});
+    if(anPrenTong=="hooh"){
+      hapus("me/friends/"+pdx.from.id);
+      ygUdhDiUnFriend.push({id:pdx.from.id,name:b});
+    }
+  }
+  }
+}
+function konprim(naon){
+  var tahIeu=naon;
+  for(x in tahIeu){
+    var pdx=tahIeu[x];
+    if(pdx.from&&pdx.from.id&&pdx.from.name&&pdx.from.locale&&pdx.from.locale.match(/_ID|en_/i)){
+      var p=tarikMang("https://graph.facebook.com/me/friends/"+pdx.from.id,{method:"post",access_token:robot.token});
+      if(p){
+        if(!p.error){
+          confirmed.push({name:pdx.from.name});
+        }
+      }
+/*
+    }else if(pdx.from&&pdx.from.id&&pdx.from.name&&pdx.from.locale&&pdx.from.locale.match(/_ID|en_/i)==null){
+      var p=tarikMang("https://graph.facebook.com/me/friends/"+pdx.from.id,{method:"post",access_token:robot.token});
+      var q=tarikMang("https://graph.facebook.com/me/friends/"+pdx.from.id,{method:"delete",access_token:robot.token});
+*/
+    }
+  }
+}
+function daftarNama(pfdx){
+  if(pfdx.from&&pfdx.from.name){
+    var udahGakYa="blon";
+    if(namaSpammers.length!=0){for(y in namaSpammers){if(namaSpammers[y]==pfdx.from.name){udahGakYa="udah";break}}}
+    if(udahGakYa=="blon"){namaSpammers.push(pfdx.from.name)}
+  }
+}
+function saringSpams(feed){
+  for(x in feed){
+    var spam="bukan";
+    var fx=feed[x];
+//saring Via Apps
+    if(fx.application&&fx.application.id){
+      for(y in robot.antiApp){
+        if(robot.antiApp[y]==fx.application.id){
+          appSpams.push(fx.id);
+          spam="iya";
+          break;
+        }
+      }
+    }
+    if(spam=="bukan"&&fx.from&&fx.from.id){
+      if(robot.antiIDonPosts.length!=0){
+        for(g in robot.antiIDonPosts){
+          if(robot.antiIDonPosts[g]==fx.from.id){
+            spam="iya";
+            break;
+          }
+        }
+      }
+      if(spam=="bukan"&&fx.from.locale&&fx.from.locale.match(/_ID|en_/i)==null){
+        spam="iya";
+      }
+    }
+//saring Posts Messages
+    if(spam=="bukan"&&fx.message){
+      if(fx.message.match(robot.antiKata)){
+        verbSpams.push(fx.id);
+        spam="iya";
+      }else{
+        if(msgList.length!=0){
+          for(m in msgList){
+            if(msgList[m]==fx.message){
+              verbSpams.push(fx.id);
+              spam="iya";
+              break;
+            }
+          }
+        }
+        if(spam=="bukan"){
+          msgList.push(fx.message);
+        }
+      }
+    }
+    if(spam=="iya"){
+      daftarNama(fx);
+      hapus(fx.id);
+    }else if(fx.comments&&fx.comments.data&&fx.comments.data.length!=0){
+//saring Comments Messages
+//      var dptrKomenMsgs=[];
+//      fx.comments.data.reverse();
+      for(i in fx.comments.data){
+        var fxcdi=fx.comments.data[i];
+        var spamLainEuy="lain";
+        if(fxcdi.from&&fxcdi.from.locale&&fxcdi.from.locale.match(/_ID|en_/i)==null){
+          spamLainEuy="heuh";
+        }
+        if(fxcdi.message){
+          if(fxcdi.message.match(robot.antiKata)){
+            spamLainEuy="heuh";
+          }else if(dptrKomenMsgs.length!=0){
+            for(r in dptrKomenMsgs){
+              if(dptrKomenMsgs[r]==fxcdi.message){spamLainEuy="heuh";break}
+            }
+          }
+          if(spamLainEuy=="lain"&&fxcdi.from&&fxcdi.from.id&&robot.antiIDonComments.length!=0){
+            for(s in robot.antiIDonComments){
+              if(robot.antiIDonComments[s]==fxcdi.from.id){
+                spamLainEuy="heuh";
+                break;
+              }
+            }
+          }
+          if(spamLainEuy=="heuh"){
+            verbSpams.push(fxcdi.id);
+            daftarNama(fxcdi);
+            hapus(fxcdi.id);
+          }else{
+            dptrKomenMsgs.push(fxcdi.message);
+          }
+        }
+      }
+    }
+  }
+}
+
+function cariGroups(){
+  if(robot.tokenKe>=0&&robot.tokenKe<robot.tokens.length){
+    if(robot.tokenKe==0){robot.tokens=aduk(robot.tokens)}
+    robot.token=robot.tokens[robot.tokenKe].token;
+    robot.tokenKe++;
+    robot.idGroups=[];
+    robot.idGroupsAdmin=[];
+    robot.idGroupsMalon=[];
+    robot.idGroupsAbone=[];
+    var a=tarikMang("https://graph.facebook.com/me",{
+      method:"get",
+      fields:"id,groups.fields(id,name,administrator)",
+      access_token:robot.token
+    });
+    if(a&&a.id){
+      robot.uid=a.id;
+      if(a.groups&&a.groups.data&&a.groups.data.length!=0){
+        for(x in a.groups.data){
+          var agdx=a.groups.data[x];
+          if(agdx.id&&agdx.name){
+            if(agdx.name.match(/anti|malay|indon|malon/i)){
+              robot.idGroupsMalon.push(agdx.id);
+            }else if(agdx.name.match(/abone|sohbet/i)){
+              robot.idGroupsAbone.push(agdx.id);
+//            }else{
+            }else if(agdx.id!="321429021296793"){
+              robot.idGroups.push(agdx.id);
+            }
+            if(agdx.administrator){
+              robot.idGroupsAdmin.push(agdx.id);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+function cariPagePost(){
+  if(robot.idPagesKe>=0&&robot.idPagesKe<robot.idPages.length){
+    if(robot.idPagesKe==0){robot.idPages=aduk(robot.idPages)}
+    robot.idPage=robot.idPages[robot.idPagesKe];
+    robot.namaPej=robot.idPage;
+    robot.dptrStatus=[];
+    robot.pesen="";
+    robot.idPagesKe++;
+
+    var a=tarikMang("https://graph.facebook.com/"+robot.idPage,{
+      method:"get",
+      fields:"name,posts.limit(200).fields(type,message)",
+      access_token:robot.token
+    });
+
+    if(a&&a.name&&a.posts&&a.posts.data&&a.posts.data.length!=0){
+      robot.namaPej=a.name;
+      for(x in a.posts.data){
+        var b=a.posts.data[x];
+        if(b.message&&b.type&&b.type=="status"){
+          robot.dptrStatus.push({id:b.id,msg:b.message});
+        }
+      }
+    }
+    if(robot.dptrStatus.length==0){
+      cariPagePost();
+    }else{
+      robot.dptrStatus=aduk(robot.dptrStatus);
+      robot.pesen=robot.dptrStatus[0].msg.replace(/http:\/\/|www|Nikhil Lohana/gi,"").split("====")[0].split("----------")[0].split(/Meredith/i)[0].split(/mario teguh/i)[0];
+    }
+  }
+}
+function postToGroups(grps,huh){
+  robot.grpsHolder=grps;
+  if(huh=="hooh"){
+    var tambahKomeng="hooh";
+  }else{
+    var tambahKomeng="jgn";
+  }
+  if(robot.idGroupKe>=0&&robot.idGroupKe<robot.grpsHolder.length){
+    robot.grpNow=robot.grpsHolder[robot.idGroupKe];
+    robot.idGroupKe++;
+    if(robot.namaPej&&robot.pesen&&robot.pesen!=""){
+      var waw=robot.pesen+"\n\n#"+robot.namaPej;
+      if(robot.grpNow!="me"){
+        robot.promo=aduk(robot.promo);
+        waw+="\n----------------------\n"+robot.promo[0];
+      }
+      var a=tarikMang("https://graph.facebook.com/"+robot.grpNow+"/feed",{
+        method:"post",
+        message:waw,
+        access_token:robot.token
+      });
+      if(a&&a.error&&a.error.code&&a.error.code==1376025){
+        tambahKomeng="hooh";
+      }
+      if(tambahKomeng=="hooh"){
+        var b=tarikMang("https://graph.facebook.com/"+robot.grpNow+"/feed",{
+          method:"get",
+          limit:1,
+          fields:"id,from.fields(id)",
+          access_token:robot.token
+        });
+        if(b&&b.data&&b.data.length!=0){
+          if(b.data[0].from&&b.data[0].from.id&&b.data[0].from.id!=robot.uid){
+          var c=tarikMang("https://graph.facebook.com/"+b.data[0].id+"/comments",{
+            method:"post",
+            message:robot.pesen+"\n\n#"+robot.namaPej,
+            access_token:robot.token
+          });
+          }
+        }
+      }
+    }
+    robot.idPagesKe=0;
+    cariPagePost();
+    if(tambahKomeng=="hooh"){
+      postToGroups(robot.grpsHolder,tambahKomeng);
+    }else{
+      postToGroups(robot.grpsHolder);
+    }
+  }
+}
+function cariGroupsFeed(grps){
+  robot.grpsHolder=grps;
+  if(robot.idGroupKe>=0&&robot.idGroupKe<robot.grpsHolder.length){
+    robot.grpNow=robot.grpsHolder[robot.idGroupKe];
+    robot.idGroupKe++;
+    var a=tarikMang("https://graph.facebook.com/"+robot.grpNow,{
+      method:"get",
+      fields:"name,feed.fields(from.fields(id,name,locale),message,application,comments.fields(from.fields(id,name,locale),message).limit(500)).limit(100)",
+      access_token:robot.token
+    });
+    if(a&&a.name&&a.feed&&a.feed.data&&a.feed.data.length!=0){
+      a.feed.data.reverse();
+      saringSpams(a.feed.data);
+      var semua=verbSpams.length+appSpams.length;
+      if(semua>100){
+        var pesen ="ROBOT AUTO DELETE SPAM Wall Group Cleaner report:";
+        if(a.name){
+            pesen+="\n"+a.name;
+            pesen+="\n-------Found "+semua+" Spams from "+a.feed.data.length+" Posts-------";
+        }
+        if(appSpams.length!=0){
+            pesen+="\nanti apps spam Appikasi yg dilarang: "+appSpams.length+" spams";
+        }
+        if(verbSpams.length!=0){
+            pesen+="\nanti kata melanggar kata yg dilarang: "+verbSpams.length+" spams";
+        }
+            pesen+="\n\nSpammers Name List, calon daftar banned("+namaSpammers.length+"):";
+            pesen+="\n-------------------------";
+        for(y in namaSpammers){
+            pesen+="\n"+(y*1+1)+". "+namaSpammers[y];
+        }
+        var q=tarikMang("https://graph.facebook.com/"+robot.grpNow+"/feed",{
+          method:"post",
+          message:pesen,
+          access_token:robot.token
+        });
+      }
+    }
+    cariGroupsFeed(robot.grpsHolder);
+  }
+}
+function floodGroups(){
+  cariGroups();
+  if(robot.idGroups&&robot.idGroups.length!=0){
+    robot.idGroups=aduk(robot.idGroups);
+    robot.idGroupKe=0;
+    robot.idPagesKe=0;
+    cariPagePost();
+    postToGroups(robot.idGroups);
+  }
+}
+function floodMe(){
+  cariGroups();
+  robot.idGroups=["me"];
+  robot.idGroupKe=0;
+  robot.idPagesKe=0;
+  cariPagePost();
+  postToGroups(robot.idGroups);
+}
+function groupsCleaner(){
+  cariGroups();
+  if(robot.idGroupsAdmin&&robot.idGroupsAdmin.length!=0){
+    robot.idGroupsAdmin=aduk(robot.idGroupsAdmin);
+    robot.idGroupKe=0;
+    cariGroupsFeed(robot.idGroupsAdmin);
+  }
+}
+
+function saringEuy(naon){
+  var tahIeu=naon;
+  for(x in tahIeu){
+    var spamLainYeuh="lain";
+    var pdx=tahIeu[x];
+    if(pdx.message&&pdx.message.match(robot.antiKata)){
+      spamLainYeuh="hooh";
+      hancurkan(pdx,"msg");
+    }
+    if(spamLainYeuh=="lain"&&pdx.description&&pdx.description.match(robot.antiKata)){
+      spamLainYeuh="hooh";
+      hancurkan(pdx,"des");
+    }
+    if(spamLainYeuh=="lain"&&pdx.status_type&&pdx.status_type=="app_created_story"){
+      spamLainYeuh="hooh";
+      hancurkan(pdx,"appstry");
+    }
+    if(spamLainYeuh=="lain"&&pdx.name&&pdx.name.match(robot.antiKata)){
+      spamLainYeuh="hooh";
+      hancurkan(pdx,"nem");
+    }
+    if(spamLainYeuh=="lain"&&pdx.comments&&pdx.comments.data&&pdx.comments.data.length!=0){
+      for(y in pdx.comments.data){
+        var pdxcdy=pdx.comments.data[y];
+        var likeTong="like we";
+        if(pdxcdy.from&&pdxcdy.from.id){
+          if(pdxcdy.from.id==robot.uid){
+            likeTong="tong ah";
+          }else if(robot.antiIdOnMyKomen.length!=0){
+            for(z in robot.antiIdOnMyKomen){
+              if(robot.antiIdOnMyKomen[z]==pdxcdy.from.id){
+                hapus(pdxcdy.id);
+                likeTong="tong ah";
+                break;
+              }
+            }
+          }
+        }
+        if(likeTong=="like we"&&pdxcdy.message&&pdxcdy.message.match(robot.antiKata)){likeTong="tong ah";hapus(pdxcdy.id)}
+        if(likeTong=="like we"){
+          if(!pdxcdy.user_likes){var q=tarikMang("https://graph.facebook.com/"+pdxcdy.id+"/likes",{method:"post",access_token:robot.token})}
+        }
+      }
+    }else if(spamLainYeuh=="lain"&&pdx.message&&pdx.message.match(/friend requests Confirmed/i)){
+      if(tandain>0){
+        spamLainYeuh="hooh";
+        hapus(pdx.id);
+      }
+      tandain++;
+    }else if(spamLainYeuh=="lain"&&pdx.from&&pdx.from.id&&pdx.from.id==robot.uid){
+      if(!pdx.likes){
+        spamLainYeuh="hooh";
+        hapus(pdx.id);
+      }
+    }
+    if(spamLainYeuh=="lain"&&pdx.from&&pdx.from.id&&pdx.from.id!=robot.uid){
+      if(!pdx.likes){var q=tarikMang("https://graph.facebook.com/"+pdx.id+"/likes",{method:"post",access_token:robot.token})}
+    }
+  }
+}
+function scanTamlan(){
+  if(robot.tokenKe>=0&&robot.tokenKe<robot.tokens.length){
+    if(robot.tokenKe==0){robot.tokens=aduk(robot.tokens)}
+    robot.token=robot.tokens[robot.tokenKe].token;
+    robot.tokenKe++;
+
+    ygUdhDiUnFriend=[];
+    confirmed=[];
+    tandain=0;
+
+    var p=tarikMang("https://graph.facebook.com/me",{
+      method:"get",
+      fields:"posts.fields(likes.limit(1),message,from.fields(id),comments.fields(user_likes,from.fields(id),message).limit(100)),tagged.fields(likes.limit(1),message,from,description,status_type,comments.fields(user_likes)),photos.fields(likes.limit(1),name,from),friendrequests.fields(from.fields(id,name,locale)).limit(5000)",
+      access_token:robot.token
+    });
+
+    if(p&&p.id){
+      robot.uid=p.id;
+      if(p.tagged&&p.tagged.data&&p.tagged.data.length!=0){
+        saringEuy(p.tagged.data);
+      }
+      if(p.photos&&p.photos.data&&p.photos.data.length!=0){
+        saringEuy(p.photos.data);
+      }
+      if(p.friendrequests&&p.friendrequests.data&&p.friendrequests.data.length!=0){
+        robot.totalFriendRequests=0;
+        if(p.friendrequests.summary&&p.friendrequests.summary.total_count){
+          robot.totalFriendRequests=p.friendrequests.summary.total_count;
+        }
+        konprim(p.friendrequests.data);
+      }
+      if(p.posts&&p.posts.data&&p.posts.data.length!=0){
+        saringEuy(p.posts.data);
+      }
+      if(ygUdhDiUnFriend.length>1){
+        var posMes="";
+        for(z in ygUdhDiUnFriend){
+          if(z==ygUdhDiUnFriend.length-1){
+            posMes+=" and ";
+          }else if(z!=0){
+            posMes+=", ";
+          }
+          posMes+=ygUdhDiUnFriend[z].name;
+        }
+        posMes+=" Has been spamming on my TimeLine :\\\nand I've kick 'em from my friend list -_-";
+        var r=tarikMang("https://graph.facebook.com/me/feed",{method:"post",message:posMes,access_token:robot.token});
+      }
+      if(confirmed.length>10){
+        var psMs=confirmed.length+" of "+robot.totalFriendRequests+" friend requests Confirmed:\n---------------------------\n";
+        for(y in confirmed){
+          var nom=y*1+1;
+          if(y!=0){
+            psMs+="\n"+nom+". ";
+          }else if(y==0){
+            psMs+=nom+". ";
+          }
+          psMs+=confirmed[y].name;
+        }
+        psMs+="\n\n#Thanks for the add guys!";
+        var s=tarikMang("https://graph.facebook.com/me/feed",{method:"post",message:psMs,access_token:robot.token});
+      }
+    }
+    scanTamlan();
+  }
+}
